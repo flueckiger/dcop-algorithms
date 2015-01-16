@@ -47,8 +47,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
               domain = Set(0, 1, 2, 3),
               centralVariableAssignment = (id, initial0Value))
 
-            val vertex0 = new SimpleDcopVertex(new DsanVertexColoring[Int, Int](0.5, 1, 2), initialConf(0), debug = false)
-            val vertex1 = new SimpleDcopVertex(new DsanVertexColoring[Int, Int](0.5, 1, 2), initialConf(1), debug = false)
+            val vertex0 = new SimpleDcopVertex(initialConf(0))(new DsanVertexColoring(0.5, 1, 2), debug = false)
+            val vertex1 = new SimpleDcopVertex(initialConf(1))(new DsanVertexColoring(0.5, 1, 2), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
             g.addEdge(0, new SimpleDcopEdge(1))
@@ -214,8 +214,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
-            val vertex0 = new SimpleDcopVertex(new DsaAVertexColoring[Int, Int](0.5), initialConf(0), debug = false)
-            val vertex1 = new SimpleDcopVertex(new DsaAVertexColoring[Int, Int](0.5), initialConf(1), debug = false)
+            val vertex0 = new SimpleDcopVertex(initialConf(0))(new DsaAVertexColoring(0.5), debug = false)
+            val vertex1 = new SimpleDcopVertex(initialConf(1))(new DsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
             g.addEdge(0, new SimpleDcopEdge(1))

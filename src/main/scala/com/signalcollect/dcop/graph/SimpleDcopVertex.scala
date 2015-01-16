@@ -33,10 +33,10 @@ class SimpleDcopEdge[Id](targetId: Id) extends DefaultEdge(targetId) {
 }
 
 class SimpleDcopVertex[Id, Action, UtilityType](
-  override val optimizer: Optimizer[Id, Action, SimpleConfig[Id, Action], UtilityType],
-  initialState: SimpleConfig[Id, Action],
-  debug: Boolean = false)
-  extends DcopVertex[Id, Action, SimpleConfig[Id, Action], UtilityType](optimizer, initialState, debug){
+  initialState: SimpleConfig[Id, Action])(
+    override val optimizer: Optimizer[Id, Action, SimpleConfig[Id, Action], UtilityType],
+    debug: Boolean = false)
+  extends DcopVertex[Id, Action, SimpleConfig[Id, Action], UtilityType](optimizer, initialState, debug) {
   
   type Signal = Action
   
