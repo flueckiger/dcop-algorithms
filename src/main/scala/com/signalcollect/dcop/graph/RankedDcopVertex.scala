@@ -44,13 +44,13 @@ class RankedDcopEdge[Id, Action, UtilityType](targetId: Id) extends DefaultEdge(
  * @param convergeByEntireState Boolean indicating if the algorithm stops when the entire state or only the action stabilizes.
  */
 class RankedDcopVertex[Id, Action, UtilityType](
-  override val optimizer: Optimizer[Id, Action, RankedConfig[Id, Action], UtilityType],
-  initialState: RankedConfig[Id, Action],
-  baseRank: Double = 0.15,
-  debug: Boolean = false,
-  eps: Double = 0.00000001,
-  convergeByEntireState: Boolean = true)
-  extends DcopVertex[Id, Action, RankedConfig[Id, Action], UtilityType](optimizer, initialState, debug) {
+  initialState: RankedConfig[Id, Action])(
+    override val optimizer: Optimizer[Id, Action, RankedConfig[Id, Action], UtilityType],
+    baseRank: Double = 0.15,
+    debug: Boolean = false,
+    eps: Double = 0.00000001,
+    convergeByEntireState: Boolean = true)
+  extends DcopVertex[Id, Action, RankedConfig[Id, Action], UtilityType](initialState)(optimizer, debug) {
 
   //Initialize (initialAction, baseRank: Double = 0.15,)
 

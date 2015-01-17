@@ -7,7 +7,7 @@ import com.signalcollect.dcop.modules.Configuration
 /**
  * The Vertex state is of type Config.
  */
-trait DcopConvergenceDetection[AgentId, Action, Config <: Configuration[AgentId, Action], UtilityType] {
+trait DcopConvergenceDetection[AgentId, Action, Config <: Configuration[AgentId, Action, Config], UtilityType] {
   this: DataGraphVertex[AgentId, Config] =>
 
   val optimizer: Optimizer[AgentId, Action, Config, UtilityType]

@@ -6,9 +6,9 @@ case class SimpleConfig[Id, Action](
   val neighborhood: Map[Id, Action],
   val numberOfCollects: Long,
   val domain: Set[Action],
-  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action] {
+  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action, SimpleConfig[Id, Action]] {
   final def withCentralVariableAssignment(value: Action) = {
-    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value)).asInstanceOf[this.type]
+    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
   }
 
   //TODO: Used for ArgmaxB decision rule and for ZeroConflictConvergenceDetection.
@@ -29,10 +29,10 @@ case class SimpleMemoryConfig[Id, Action, UtilityType](
   val memory: Map[Action, UtilityType],
   val numberOfCollects: Long,
   val domain: Set[Action],
-  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action] {
+  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action, SimpleMemoryConfig[Id, Action, UtilityType]] {
   
   final def withCentralVariableAssignment(value: Action) = {
-    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value)).asInstanceOf[this.type]
+    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
   }
 
   def computeExpectedNumberOfConflicts = {
@@ -53,13 +53,13 @@ case class RankedConfig[Id, Action](
   val numberOfCollects: Long,
   val ranks: Map[Id, Double],
   val domain: Set[Action],
-  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action] {
+  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action, RankedConfig[Id, Action]] {
 
   /*
    * Not only the value changes, but also the rank.  
    */
-  final def withCentralVariableAssignment(value: Action): this.type = {
-    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value)).asInstanceOf[this.type]
+  final def withCentralVariableAssignment(value: Action) = {
+    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
   }
 
   def computeExpectedNumberOfConflicts = {

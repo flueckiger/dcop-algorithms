@@ -2,7 +2,7 @@ package com.signalcollect.dcop.impl
 
 import com.signalcollect.dcop.modules._
 
-trait VertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Action]] extends UtilityFunction[AgentId, Action, Config, Double] {
+trait VertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends UtilityFunction[AgentId, Action, Config, Double] {
   def computeUtility(c: Config) = {
     val occupiedColors = c.neighborhood.values
     val numberOfConflicts = occupiedColors.filter(_ == c.centralVariableValue).size
@@ -12,7 +12,7 @@ trait VertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Ac
   }
 }
 
-trait ConflictBasedVertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Action]] extends UtilityFunction[AgentId, Action, Config, Double] {
+trait ConflictBasedVertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends UtilityFunction[AgentId, Action, Config, Double] {
   def computeUtility(c: Config) = {
     val occupiedColors = c.neighborhood.values
     val numberOfConflicts = occupiedColors.filter(_ == c.centralVariableValue).size

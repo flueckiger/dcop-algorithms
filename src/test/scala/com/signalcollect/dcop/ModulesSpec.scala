@@ -41,7 +41,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = GraphBuilder.build
           try {
-            def initialConf(id: Int) = SimpleConfig[Int, Int](
+            def initialConf(id: Int) = SimpleConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
               domain = Set(0, 1, 2, 3),
@@ -80,8 +80,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
-            val vertex0 = new RankedDcopVertex(new RankedDsaAVertexColoring[Int, Int](0.5), initialConf(0), debug = false)
-            val vertex1 = new RankedDcopVertex(new RankedDsaAVertexColoring[Int, Int](0.5), initialConf(1), debug = false)
+            val vertex0 = new RankedDcopVertex(initialConf(0))(new RankedDsaAVertexColoring(0.5), debug = false)
+            val vertex1 = new RankedDcopVertex(initialConf(1))(new RankedDsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
             g.addEdge(0, new RankedDcopEdge(1))
@@ -114,8 +114,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
-            val vertex0 = new RankedDcopVertex(new RankedDsaAVertexColoring[Int, Int](0.5), initialConf(0), debug = false)
-            val vertex1 = new RankedDcopVertex(new RankedDsaAVertexColoring[Int, Int](0.5), initialConf(1), debug = false)
+            val vertex0 = new RankedDcopVertex(initialConf(0))(new RankedDsaAVertexColoring(0.5), debug = false)
+            val vertex1 = new RankedDcopVertex(initialConf(1))(new RankedDsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
             g.addEdge(0, new RankedDcopEdge(1))
@@ -141,15 +141,15 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = GraphBuilder.build
           try {
-            def initialConf(id: Int) = SimpleMemoryConfig[Int, Int, Double](
+            def initialConf(id: Int) = SimpleMemoryConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
-              memory = Map.empty[Int, Double].withDefaultValue(0),
+              memory = Map.empty[Int, Double].withDefaultValue(0.0),
               numberOfCollects = 0,
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
-            val vertex0 = new MemoryDcopVertex(new FadingMemoryJsfpiVertexColoring[Int, Int](0.5, 0.7), initialConf(0), debug = false)
-            val vertex1 = new MemoryDcopVertex(new FadingMemoryJsfpiVertexColoring[Int, Int](0.5, 0.7), initialConf(1), debug = false)
+            val vertex0 = new MemoryDcopVertex(initialConf(0))(new FadingMemoryJsfpiVertexColoring(0.5, 0.7), debug = false)
+            val vertex1 = new MemoryDcopVertex(initialConf(1))(new FadingMemoryJsfpiVertexColoring(0.5, 0.7), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
             g.addEdge(0, new MemoryDcopEdge(1))
@@ -175,15 +175,15 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
           val g = GraphBuilder.build
           try {
 
-            def initialConf(id: Int) = SimpleMemoryConfig[Int, Int, Double](
+            def initialConf(id: Int) = SimpleMemoryConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
-              memory = Map.empty[Int, Double].withDefaultValue(0),
+              memory = Map.empty[Int, Double].withDefaultValue(0.0),
               numberOfCollects = 0,
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
-            val vertex0 = new MemoryDcopVertex(new WrmiVertexColoring[Int, Int](0.5, 0.7), initialConf(0), debug = false)
-            val vertex1 = new MemoryDcopVertex(new WrmiVertexColoring[Int, Int](0.5, 0.7), initialConf(1), debug = false)
+            val vertex0 = new MemoryDcopVertex(initialConf(0))(new WrmiVertexColoring(0.5, 0.7), debug = false)
+            val vertex1 = new MemoryDcopVertex(initialConf(1))(new WrmiVertexColoring(0.5, 0.7), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
             g.addEdge(0, new MemoryDcopEdge(1))
@@ -208,7 +208,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = GraphBuilder.build
           try {
-            def initialConf(id: Int) = SimpleConfig[Int, Int](
+            def initialConf(id: Int) = SimpleConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
               domain = Set(0, 1),

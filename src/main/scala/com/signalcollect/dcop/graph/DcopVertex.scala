@@ -12,10 +12,10 @@ import com.signalcollect.dcop.modules._
  * @param initialState Initial state of the vertex
  * @param debug Boolean idicating if there should be any printlines
  */
-abstract class DcopVertex[Id, Action, Config <: Configuration[Id, Action], UtilityType](
-  val optimizer: Optimizer[Id, Action, Config, UtilityType],
-  initialState: Config,
-  debug: Boolean = false)
+abstract class DcopVertex[Id, Action, Config <: Configuration[Id, Action, Config], UtilityType](
+  initialState: Config)(
+    val optimizer: Optimizer[Id, Action, Config, UtilityType],
+    debug: Boolean = false)
   extends DataGraphVertex(initialState.centralVariableAssignment._1, initialState)
   with DcopConvergenceDetection[Id, Action, Config, UtilityType] {
 

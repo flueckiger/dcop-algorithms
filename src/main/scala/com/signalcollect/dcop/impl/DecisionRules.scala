@@ -9,7 +9,7 @@ import com.signalcollect.dcop.modules._
  * then it is the state selected at t. Otherwise, a new state is randomly selected from the set of target function
  * maximizing states." 
  */
-trait ArgmaxADecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action]] extends DecisionRule[AgentId, Action, Config] with TargetFunction[AgentId, Action, Config, Double] {
+trait ArgmaxADecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends DecisionRule[AgentId, Action, Config] with TargetFunction[AgentId, Action, Config, Double] {
 
   def computeMove(c: Config) = {
     val expectedUtilities: Map[Action, Double] = computeExpectedUtilities(c)
@@ -27,7 +27,7 @@ trait ArgmaxADecisionRule[AgentId, Action, Config <: Configuration[AgentId, Acti
 
 }
 
-trait ArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
+trait ArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
 
   //TODO: Rewrite conditions for computeMove like in the Exploration version
   override def computeMove(c: Config) = {
@@ -50,7 +50,7 @@ trait ArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Acti
   }
 }
 
-trait ExplorerArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
+trait ExplorerArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
 
   def expl: Double
 
@@ -82,7 +82,7 @@ trait ExplorerArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[Agent
   }
 }
 
-trait SimulatedAnnealingDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
+trait SimulatedAnnealingDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
 
   def const: Double
   def k: Double
@@ -108,7 +108,7 @@ trait SimulatedAnnealingDecisionRule[AgentId, Action, Config <: Configuration[Ag
  // override def shouldTerminate(c: Config): Boolean = isInLocalOptimum(c)&&(scala.math.exp( deltaComp *iteration*iteration) < 0.01)
 }
 
-trait LinearProbabilisticDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
+trait LinearProbabilisticDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends ArgmaxADecisionRule[AgentId, Action, Config] {
 
 
   /*

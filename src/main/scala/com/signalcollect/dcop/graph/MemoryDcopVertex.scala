@@ -43,13 +43,13 @@ class MemoryDcopEdge[Id](targetId: Id) extends DefaultEdge(targetId) {
  * @param convergeByEntireState Boolean indicating if the algorithm stops when the entire state or only the action stabilizes.
  */
 class MemoryDcopVertex[Id, Action](
-  override val optimizer: Optimizer[Id, Action, SimpleMemoryConfig[Id, Action, Double], Double],
-  initialState: SimpleMemoryConfig[Id, Action, Double],
-  debug: Boolean = false,
-  eps: Double = 0.00000000001,
-  convergeByEntireState: Boolean = true)
-  extends DcopVertex[Id, Action, SimpleMemoryConfig[Id, Action, Double], Double](
-    optimizer, initialState, debug) {
+  initialState: SimpleMemoryConfig[Id, Action, Double])(
+    override val optimizer: Optimizer[Id, Action, SimpleMemoryConfig[Id, Action, Double], Double],
+    debug: Boolean = false,
+    eps: Double = 0.00000000001,
+    convergeByEntireState: Boolean = true)
+  extends DcopVertex[Id, Action, SimpleMemoryConfig[Id, Action, Double], Double](initialState)(
+    optimizer, debug) {
 
   //Initialize state memory and stuff: (initialAction, Map.empty[Action, Double].withDefaultValue(0), 0)
 

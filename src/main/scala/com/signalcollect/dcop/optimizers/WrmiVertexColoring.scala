@@ -9,7 +9,7 @@ class WrmiVertexColoring[AgentId, Action](changeProbability: Double, rhoValue: D
   val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]](changeProbability)
   val rule = new LinearProbabilisticDecisionRule[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] 
     with NashEquilibriumConvergence[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] 
-    with DiscountedAverageRegretsTargetFunction[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] 
+    with DiscountedAverageRegretsTargetFunction[AgentId, Action] 
     with VertexColoringUtility[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] {
     def rho = rhoValue
   }

@@ -3,7 +3,7 @@ package com.signalcollect.dcop.optimizers
 import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 
-class DsanVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Action]](changeProbability: Double, constant: Double, kval: Double) extends Optimizer[AgentId, Action, Config, Double] {
+class DsanVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Action, Config]](changeProbability: Double, constant: Double, kval: Double) extends Optimizer[AgentId, Action, Config, Double] {
   val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, Config](changeProbability)
   val rule = new SimulatedAnnealingDecisionRule[AgentId, Action, Config] 
     with NashEquilibriumConvergence[AgentId, Action, Config] 

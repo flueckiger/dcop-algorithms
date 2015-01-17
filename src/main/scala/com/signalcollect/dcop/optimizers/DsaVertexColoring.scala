@@ -54,7 +54,7 @@ class RankedDsaAVertexColoring[AgentId, Action](changeProbability: Double) exten
   val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, RankedConfig[AgentId, Action]](changeProbability)
   val rule = new  ArgmaxADecisionRule[AgentId, Action, RankedConfig[AgentId, Action]] 
   		with NashEquilibriumConvergence[AgentId, Action, RankedConfig[AgentId, Action]]  
-  		with RankWeightedTargetFunction[AgentId, Action, RankedConfig[AgentId, Action], Double] 
+  		with RankWeightedTargetFunction[AgentId, Action, Double] 
   		with VertexColoringUtility[AgentId, Action, RankedConfig[AgentId, Action]]
   override def toString = "RankedDsaAVertexColoringChangeProbability" + changeProbability
 }

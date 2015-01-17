@@ -36,7 +36,7 @@ class SimpleDcopVertex[Id, Action, UtilityType](
   initialState: SimpleConfig[Id, Action])(
     override val optimizer: Optimizer[Id, Action, SimpleConfig[Id, Action], UtilityType],
     debug: Boolean = false)
-  extends DcopVertex[Id, Action, SimpleConfig[Id, Action], UtilityType](optimizer, initialState, debug) {
+  extends DcopVertex[Id, Action, SimpleConfig[Id, Action], UtilityType](initialState)(optimizer, debug) {
   
   type Signal = Action
   
