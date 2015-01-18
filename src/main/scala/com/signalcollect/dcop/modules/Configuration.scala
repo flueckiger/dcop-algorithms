@@ -1,6 +1,6 @@
 package com.signalcollect.dcop.modules
 
-trait Configuration[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends Serializable {
+trait Configuration[AgentId, Action, +Config <: Configuration[AgentId, Action, Config]] extends Serializable {
   def neighborhood: Map[AgentId, Action]
   def numberOfCollects: Long
   def domain: Set[Action]
