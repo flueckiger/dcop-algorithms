@@ -57,8 +57,7 @@ class RankedDcopVertex[Id, Action, UtilityType](
   type Signal = (Action, Double)
 
   def currentConfig: RankedConfig[Id, Action] = {
-    val neighborhoodSignalMap = (mostRecentSignalMap.toMap).
-      asInstanceOf[Map[Id, (Action, Double)]]
+    val neighborhoodSignalMap = mostRecentSignalMap
     val neighborhoodAssignments = neighborhoodSignalMap.
       map(tuple => (tuple._1, tuple._2._1)).toMap
     val neighborhoodRanks: Map[Id, Double] = neighborhoodSignalMap.

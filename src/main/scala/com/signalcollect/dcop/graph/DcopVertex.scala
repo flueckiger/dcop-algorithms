@@ -16,7 +16,7 @@ abstract class DcopVertex[Id, Action, Config <: Configuration[Id, Action, Config
   initialState: Config)(
     val optimizer: Optimizer[Id, Action, Config, UtilityType],
     debug: Boolean = false)
-  extends DataGraphVertex(initialState.centralVariableAssignment._1, initialState)
+  extends DataGraphVertexEx[Id, Config, Id, Action](initialState.centralVariableAssignment._1, initialState)
   with DcopConvergenceDetection[Id, Action, Config, UtilityType] {
 
   def currentConfig: Config

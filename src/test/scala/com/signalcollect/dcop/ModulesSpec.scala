@@ -39,7 +39,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         def initial0Value = 0
 
         for (i <- (1 to 50)) {
-          val g = GraphBuilder.build
+          val g = new GraphBuilder[Int, Int].build
           try {
             def initialConf(id: Int) = SimpleConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
@@ -71,7 +71,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         def initial0Value = 0
 
         for (i <- (1 to 50)) {
-          val g = GraphBuilder.build
+          val g = new GraphBuilder[Int, Int].build
           try {
             def initialConf(id: Int) = RankedConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
@@ -105,7 +105,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         def initial0Value = 0
 
         for (i <- (1 to 50)) {
-          val g = GraphBuilder.build
+          val g = new GraphBuilder[Int, Int].build
           try {
             def initialConf(id: Int) = RankedConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
@@ -139,7 +139,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         def initial0Value = 0
 
         for (i <- (1 to 50)) {
-          val g = GraphBuilder.build
+          val g = new GraphBuilder[Int, Int].build
           try {
             def initialConf(id: Int) = SimpleMemoryConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
@@ -172,7 +172,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         def initial0Value = 0
 
         for (i <- (1 to 50)) {
-          val g = GraphBuilder.build
+          val g = new GraphBuilder[Int, Int].build
           try {
 
             def initialConf(id: Int) = SimpleMemoryConfig(
@@ -206,7 +206,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         def initial0Value = 0
 
         for (i <- (1 to 50)) {
-          val g = GraphBuilder.build
+          val g = new GraphBuilder[Int, Int].build
           try {
             def initialConf(id: Int) = SimpleConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
