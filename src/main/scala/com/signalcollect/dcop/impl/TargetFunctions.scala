@@ -119,7 +119,7 @@ trait RankWeightedTargetFunction[AgentId, Action, UtilityType] extends MemoryLes
     override def computeExpectedUtilities(c: RankedConfig[AgentId, Action]) = {
       iteration += 1
       if (switched == false && iteration > 10)
-        if (Random.nextDouble <= 0.2)
+        if (Random.nextDouble < 0.2)
           switched = true
 
       if (!switched) {
@@ -144,7 +144,7 @@ trait RankWeightedTargetFunction[AgentId, Action, UtilityType] extends MemoryLes
     override def computeExpectedUtilities(c: RankedConfig[AgentId, Action]) = {
       iteration += 1
       if (switched == false && iteration > 15)
-        if (Random.nextDouble <= 0.2)
+        if (Random.nextDouble < 0.2)
           switched = true
 
       if (!switched) {
@@ -169,7 +169,7 @@ trait RankWeightedTargetFunction[AgentId, Action, UtilityType] extends MemoryLes
     override def computeExpectedUtilities(c: RankedConfig[AgentId, Action]) = {
       iteration += 1
       if (switched == false && iteration > 20)
-        if (Random.nextDouble <= 0.2)
+        if (Random.nextDouble < 0.2)
           switched = true
 
       if (!switched) {
@@ -194,7 +194,7 @@ trait RankWeightedTargetFunction[AgentId, Action, UtilityType] extends MemoryLes
     override def computeExpectedUtilities(c: RankedConfig[AgentId, Action]) = {
       iteration += 1
       if (switched == false && iteration > 10)
-        if (Random.nextDouble <= 0.2)
+        if (Random.nextDouble < 0.2)
           switched = true
 
       if (!switched) {
@@ -219,7 +219,7 @@ trait RankWeightedTargetFunction[AgentId, Action, UtilityType] extends MemoryLes
     override def computeExpectedUtilities(c: RankedConfig[AgentId, Action]) = {
       iteration += 1
       if (switched == false && iteration > 15)
-        if (Random.nextDouble <= 0.2)
+        if (Random.nextDouble < 0.2)
           switched = true
 
       if (!switched) {
@@ -244,7 +244,7 @@ trait RankWeightedTargetFunction[AgentId, Action, UtilityType] extends MemoryLes
     override def computeExpectedUtilities(c: RankedConfig[AgentId, Action]) = {
       iteration += 1
       if (switched == false && iteration > 20)
-        if (Random.nextDouble <= 0.2)
+        if (Random.nextDouble < 0.2)
           switched = true
 
       if (!switched) {

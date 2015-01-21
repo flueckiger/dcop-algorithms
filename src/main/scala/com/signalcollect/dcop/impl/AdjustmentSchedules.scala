@@ -6,7 +6,7 @@ import com.signalcollect.dcop.modules._
 //TODO Constrain Config <: Configuration[AgentId, Action]?
 class ParallelRandomAdjustmentSchedule[AgentId, Action, Config](changeProbability: Double) extends AdjustmentSchedule[AgentId, Action, Config] {
   def shouldConsiderMove(c: Config) = {
-    Random.nextDouble <= changeProbability
+    Random.nextDouble < changeProbability
   }
 }
 
@@ -20,7 +20,7 @@ class RankedBasedAdjustmentSchedule[AgentId, Action](relativeChangeProbability: 
     val rankForCurrentConfig = c.ranks(c.centralVariableAssignment._1)
     val relativeRankRatio = rankForCurrentConfig / maxNeighbourRank
     val changeProbability = 1 - relativeRankRatio * relativeChangeProbability // The higher the rank ratio, the lower the probability to change.
-    Random.nextDouble <= changeProbability
+    Random.nextDouble < changeProbability
   }
 }
 
@@ -30,7 +30,7 @@ class InvertRankedBasedAdjustmentSchedule[AgentId, Action](relativeChangeProbabi
     val rankForCurrentConfig = c.ranks(c.centralVariableAssignment._1)
     val relativeRankRatio = rankForCurrentConfig / maxNeighbourRank
     val changeProbability = relativeRankRatio * relativeChangeProbability // The higher the rank ratio, the higher the probability to change.
-    Random.nextDouble <= changeProbability
+    Random.nextDouble < changeProbability
   }
 }
 
@@ -63,7 +63,7 @@ class DynamicRankedBasedAdjustmentSchedule[AgentId, Action](relativeChangeProbab
     val rankForCurrentConfig = c.ranks(c.centralVariableAssignment._1)
     val relativeRankRatio = rankForCurrentConfig / maxNeighbourRank
     val changeProbability = (if (!isAtRankedNashEquilibriumInAdjustmentSchedule(c)) 1 - relativeRankRatio else relativeRankRatio) * relativeChangeProbability // The higher the rank ratio, the higher the probability to change.
-    Random.nextDouble <= changeProbability
+    Random.nextDouble < changeProbability
   }
 }
 
@@ -76,7 +76,7 @@ class DynamicRankedBasedAdjustmentSchedule[AgentId, Action](relativeChangeProbab
   //      val rankForCurrentConfig = c.ranks(c.centralVariableAssignment._1)
   //      val relativeRankRatio = rankForCurrentConfig / maxNeighbourRank // Ranks are > 0
   //      val changeProbability = baseChangeProbability - relativeRankRatio * relativeChangeProbability // The higher the rank ratio, the lower the probability to change.
-  //      Random.nextDouble <= changeProbability
+  //      Random.nextDouble < changeProbability
   //    }
   //  }
 

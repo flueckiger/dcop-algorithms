@@ -98,7 +98,7 @@ trait SimulatedAnnealingDecisionRule[AgentId, Action, Config <: Configuration[Ag
     val delta = expectedUtilities.getOrElse[Double](randomMove, -1) - expectedUtilities.getOrElse[Double](c.centralVariableValue, -1)
     deltaComp = delta
     val probab = if (delta == 0) 0.001 else scala.math.exp( delta * iteration* iteration / 1000 ) //delta / eta(iteration))
-    if (delta > 0 || (delta <= 0 && Random.nextDouble <= probab)) {
+    if (delta > 0 || (delta <= 0 && Random.nextDouble < probab)) {
       randomMove
     } else {
       c.centralVariableValue
