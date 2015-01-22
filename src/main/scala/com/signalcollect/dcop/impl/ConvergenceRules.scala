@@ -4,8 +4,7 @@ package com.signalcollect.dcop.impl
 import scala.util.Random
 import com.signalcollect.dcop.modules._
 
-//TODO: Once we want a different type of utility, to plug-in a Utility type param for the traits and for the expectedUtilities vals. It must be compatible with the max function.
-trait NashEquilibriumConvergence[AgentId, Action, Config <: Configuration[AgentId, Action, Config]] extends DecisionRule[AgentId, Action, Config] {
+trait NashEquilibriumConvergence[AgentId, Action, Config <: Configuration[AgentId, Action, Config], UtilityType] extends DecisionRule[AgentId, Action, Config, UtilityType] {
 
   
 override def shouldTerminate(c: Config): Boolean = isInLocalOptimum(c)

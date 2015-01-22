@@ -3,12 +3,13 @@ package com.signalcollect.dcop.optimizers
 import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 
-class DsanVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Action, Config]](changeProbability: Double, constant: Double, kval: Double) extends Optimizer[AgentId, Action, Config, Double] {
+class DsanVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Action, Config], UtilityType](changeProbability: Double, constant: UtilityType, kval: UtilityType)(implicit utilEv: Numeric[UtilityType]) extends Optimizer[AgentId, Action, Config, UtilityType] {
   val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, Config](changeProbability)
-  val rule = new SimulatedAnnealingDecisionRule[AgentId, Action, Config] 
-    with NashEquilibriumConvergence[AgentId, Action, Config] 
-    with MemoryLessTargetFunction[AgentId, Action, Config, Double] 
-    with VertexColoringUtility[AgentId, Action, Config] { 
+  val rule = new SimulatedAnnealingDecisionRule[AgentId, Action, Config, UtilityType] 
+    with NashEquilibriumConvergence[AgentId, Action, Config, UtilityType] 
+    with MemoryLessTargetFunction[AgentId, Action, Config, UtilityType] 
+    with VertexColoringUtility[AgentId, Action, Config, UtilityType] { 
+      override val utilEv = DsanVertexColoring.this.utilEv
       def const = constant 
       def k = kval 
       }

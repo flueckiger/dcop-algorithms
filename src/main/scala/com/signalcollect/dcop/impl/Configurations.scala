@@ -2,11 +2,12 @@ package com.signalcollect.dcop.impl
 
 import com.signalcollect.dcop.modules._
 
-case class SimpleConfig[Id, Action](
+case class SimpleConfig[Id, Action, UtilityType](
   val neighborhood: Map[Id, Action],
   val numberOfCollects: Long,
   val domain: Set[Action],
-  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action, SimpleConfig[Id, Action]] {
+  val centralVariableAssignment: (Id, Action),
+  val utilityType: UtilityType = 0) extends Configuration[Id, Action, SimpleConfig[Id, Action, UtilityType]] {
   final def withCentralVariableAssignment(value: Action) = {
     this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
   }
@@ -48,12 +49,12 @@ case class SimpleMemoryConfig[Id, Action, UtilityType](
 }
 
 
-case class RankedConfig[Id, Action](
+case class RankedConfig[Id, Action, UtilityType](
   val neighborhood: Map[Id, Action],
   val numberOfCollects: Long,
-  val ranks: Map[Id, Double],
+  val ranks: Map[Id, UtilityType],
   val domain: Set[Action],
-  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action, RankedConfig[Id, Action]] {
+  val centralVariableAssignment: (Id, Action)) extends Configuration[Id, Action, RankedConfig[Id, Action, UtilityType]] {
 
   /*
    * Not only the value changes, but also the rank.  

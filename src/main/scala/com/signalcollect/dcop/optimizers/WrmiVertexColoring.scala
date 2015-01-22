@@ -5,12 +5,13 @@ import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 import com.signalcollect.dcop.impl.ArgmaxADecisionRule
 
-class WrmiVertexColoring[AgentId, Action](changeProbability: Double, rhoValue: Double) extends Optimizer[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double], Double] {
-  val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]](changeProbability)
-  val rule = new LinearProbabilisticDecisionRule[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] 
-    with NashEquilibriumConvergence[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] 
-    with DiscountedAverageRegretsTargetFunction[AgentId, Action] 
-    with VertexColoringUtility[AgentId, Action, SimpleMemoryConfig[AgentId, Action, Double]] {
+class WrmiVertexColoring[AgentId, Action, UtilityType](changeProbability: Double, rhoValue: UtilityType)(implicit utilEv: Numeric[UtilityType]) extends Optimizer[AgentId, Action, SimpleMemoryConfig[AgentId, Action, UtilityType], UtilityType] {
+  val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, SimpleMemoryConfig[AgentId, Action, UtilityType]](changeProbability)
+  val rule = new LinearProbabilisticDecisionRule[AgentId, Action, SimpleMemoryConfig[AgentId, Action, UtilityType], UtilityType] 
+    with NashEquilibriumConvergence[AgentId, Action, SimpleMemoryConfig[AgentId, Action, UtilityType], UtilityType] 
+    with DiscountedAverageRegretsTargetFunction[AgentId, Action, UtilityType] 
+    with VertexColoringUtility[AgentId, Action, SimpleMemoryConfig[AgentId, Action, UtilityType], UtilityType] {
+    override val utilEv = WrmiVertexColoring.this.utilEv
     def rho = rhoValue
   }
   override def toString = "WrmiVertexColoringChangeProbability" + changeProbability + "rhoValue" + rhoValue

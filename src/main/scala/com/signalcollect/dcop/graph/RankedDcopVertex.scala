@@ -19,18 +19,26 @@
  */
 
 package com.signalcollect.dcop.graph
+
+import scala.math.Fractional.Implicits._
+import scala.math.Ordering.Implicits._
 import com.signalcollect._
 import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 
-class RankedDcopEdge[Id, Action, UtilityType](targetId: Id) extends DefaultEdge(targetId) {
+class RankedDcopEdge[Id, Action, UtilityType](targetId: Id)(implicit utilEv: Fractional[UtilityType]) extends DefaultEdge(targetId) {
   type Source = RankedDcopVertex[Id, Action, UtilityType]
 
   def signal = {
     val sourceState = source.state
     val sourceStateAssignment = source.state.centralVariableAssignment
-    (sourceStateAssignment._2, sourceState.ranks(sourceStateAssignment._1) / source.edgeCount)
+    (sourceStateAssignment._2, sourceState.ranks(sourceStateAssignment._1) / utilEv.fromInt(source.edgeCount))
   }
+}
+
+object RankedDcopEdge {
+  def apply[Id, Action, Config <: Configuration[Id, Action, Config], UtilityType](vertex: DcopVertex[Id, Action, Config, UtilityType])(implicit utilEv: Fractional[UtilityType]) =
+    new RankedDcopEdge[Id, Action, UtilityType](vertex.state.centralVariableAssignment._1)
 }
 
 /**
@@ -44,23 +52,28 @@ class RankedDcopEdge[Id, Action, UtilityType](targetId: Id) extends DefaultEdge(
  * @param convergeByEntireState Boolean indicating if the algorithm stops when the entire state or only the action stabilizes.
  */
 class RankedDcopVertex[Id, Action, UtilityType](
-  initialState: RankedConfig[Id, Action])(
-    override val optimizer: Optimizer[Id, Action, RankedConfig[Id, Action], UtilityType],
-    baseRank: Double = 0.15,
+  initialState: RankedConfig[Id, Action, UtilityType])(
+    override val optimizer: Optimizer[Id, Action, RankedConfig[Id, Action, UtilityType], UtilityType],
+    baseRank: (Int, Int) = (3, 20),
     debug: Boolean = false,
-    eps: Double = 0.00000001,
-    convergeByEntireState: Boolean = true)
-  extends DcopVertex[Id, Action, RankedConfig[Id, Action], UtilityType](initialState)(optimizer, debug) {
+    eps: (Int, Int) = (1, 100000000),
+    convergeByEntireState: Boolean = true)(
+      implicit utilEv: Fractional[UtilityType])
+  extends DcopVertex[Id, Action, RankedConfig[Id, Action, UtilityType], UtilityType](initialState)(optimizer, debug) {
+  val baseRankNum = utilEv.fromInt(baseRank._1)
+  val baseRankDen = utilEv.fromInt(baseRank._2)
+  val epsNum = utilEv.fromInt(eps._1)
+  val epsDen = utilEv.fromInt(eps._2)
 
   //Initialize (initialAction, baseRank: Double = 0.15,)
 
-  type Signal = (Action, Double)
+  type Signal = (Action, UtilityType)
 
-  def currentConfig: RankedConfig[Id, Action] = {
+  def currentConfig: RankedConfig[Id, Action, UtilityType] = {
     val neighborhoodSignalMap = mostRecentSignalMap
     val neighborhoodAssignments = neighborhoodSignalMap.
       map(tuple => (tuple._1, tuple._2._1)).toMap
-    val neighborhoodRanks: Map[Id, Double] = neighborhoodSignalMap.
+    val neighborhoodRanks: Map[Id, UtilityType] = neighborhoodSignalMap.
       map(tuple => (tuple._1, tuple._2._2)).toMap
     //  val ranks = neighborhoodRanks + ((id, state._2))
     val oldRanks = neighborhoodRanks + ((id, state.ranks(id)))
@@ -71,23 +84,23 @@ class RankedDcopVertex[Id, Action, UtilityType](
   }
 
   //TODO: Replace with more general.  
-  def computeRankForMove(c: RankedConfig[Id, Action]): Double = {
+  def computeRankForMove(c: RankedConfig[Id, Action, UtilityType]): UtilityType = {
     val allies = c.neighborhood.filter(_._2 != c.centralVariableValue)
     val allyRankSum = allies.keys.map(c.ranks).sum
-    val dampingFactor = 1.0 - baseRank
-    val newPageRank = baseRank + dampingFactor * allyRankSum
-    newPageRank
+    val dampingNumerator = baseRankDen - baseRankNum
+    val newPageRankNumerator = baseRankNum + dampingNumerator * allyRankSum
+    newPageRankNumerator / baseRankDen
   }
 
-  def sameMaps(newMap: Map[Id, Double], oldMap: Map[Id, Double]): Boolean = {
+  def sameMaps(newMap: Map[Id, UtilityType], oldMap: Map[Id, UtilityType]): Boolean = {
     for (elem1 <- newMap) {
-      val inSecondMapValue = oldMap.getOrElse(elem1._1, -1.0)
-      if (math.abs(elem1._2 - inSecondMapValue) > eps) return false
+      val inSecondMapValue = oldMap.getOrElse(elem1._1, utilEv.fromInt(-1))
+      if (utilEv.abs(elem1._2 - inSecondMapValue) >= epsNum / epsDen) return false
     }
     true
   }
   
-  override def isStateUnchanged(oldConfig: RankedConfig[Id, Action], newConfig: RankedConfig[Id, Action]): Boolean = {
+  override def isStateUnchanged(oldConfig: RankedConfig[Id, Action, UtilityType], newConfig: RankedConfig[Id, Action, UtilityType]): Boolean = {
     (oldConfig.centralVariableAssignment == newConfig.centralVariableAssignment) &&
     (oldConfig.neighborhood == newConfig.neighborhood) && 
     sameMaps(oldConfig.ranks, newConfig.ranks)

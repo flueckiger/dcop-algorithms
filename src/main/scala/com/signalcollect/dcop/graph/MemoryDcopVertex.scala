@@ -19,17 +19,25 @@
  */
 
 package com.signalcollect.dcop.graph
+
+import scala.math.Fractional.Implicits._
+import scala.math.Ordering.Implicits._
 import com.signalcollect._
 import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 
-class MemoryDcopEdge[Id](targetId: Id) extends DefaultEdge(targetId) {
-  type Source = MemoryDcopVertex[_, _]
+class MemoryDcopEdge[Id, Action, UtilityType](targetId: Id) extends DefaultEdge(targetId) {
+  type Source = MemoryDcopVertex[Id, Action, UtilityType]
 
   def signal = {
     val sourceState = source.state
     sourceState.centralVariableValue
   }
+}
+
+object MemoryDcopEdge {
+  def apply[Id, Action, Config <: Configuration[Id, Action, Config], UtilityType](vertex: DcopVertex[Id, Action, Config, UtilityType]) =
+    new MemoryDcopEdge[Id, Action, UtilityType](vertex.state.centralVariableAssignment._1)
 }
 
 /**
@@ -42,20 +50,23 @@ class MemoryDcopEdge[Id](targetId: Id) extends DefaultEdge(targetId) {
  * @param debug Boolean idicating if there should be any printlines
  * @param convergeByEntireState Boolean indicating if the algorithm stops when the entire state or only the action stabilizes.
  */
-class MemoryDcopVertex[Id, Action](
-  initialState: SimpleMemoryConfig[Id, Action, Double])(
-    override val optimizer: Optimizer[Id, Action, SimpleMemoryConfig[Id, Action, Double], Double],
+class MemoryDcopVertex[Id, Action, UtilityType](
+  initialState: SimpleMemoryConfig[Id, Action, UtilityType])(
+    override val optimizer: Optimizer[Id, Action, SimpleMemoryConfig[Id, Action, UtilityType], UtilityType],
     debug: Boolean = false,
-    eps: Double = 0.00000000001,
-    convergeByEntireState: Boolean = true)
-  extends DcopVertex[Id, Action, SimpleMemoryConfig[Id, Action, Double], Double](initialState)(
+    eps: (Int, Int) = (1, Int.MaxValue),
+    convergeByEntireState: Boolean = true)(
+      implicit utilEv: Fractional[UtilityType])
+  extends DcopVertex[Id, Action, SimpleMemoryConfig[Id, Action, UtilityType], UtilityType](initialState)(
     optimizer, debug) {
+  val epsNum = utilEv.fromInt(eps._1)
+  val epsDen = utilEv.fromInt(eps._2)
 
   //Initialize state memory and stuff: (initialAction, Map.empty[Action, Double].withDefaultValue(0), 0)
 
   type Signal = Action //(Action, Map[Action, Double], Long)
 
-  override def currentConfig: SimpleMemoryConfig[Id, Action, Double] = {
+  override def currentConfig: SimpleMemoryConfig[Id, Action, UtilityType] = {
     val neighborhood: Map[Id, Action] = mostRecentSignalMap
     val oldC = SimpleMemoryConfig(neighborhood, state.memory, state.numberOfCollects, state.domain, state.centralVariableAssignment)
     val newMemory = optimizer.rule.computeExpectedUtilities(oldC)
@@ -63,16 +74,16 @@ class MemoryDcopVertex[Id, Action](
     c
   }
 
-  def sameMaps(newMap: Map[Action, Double], oldMap: Map[Action, Double]): Boolean = {
+  def sameMaps(newMap: Map[Action, UtilityType], oldMap: Map[Action, UtilityType]): Boolean = {
     for (elem1 <- newMap) {
-      val inSecondMapValue = oldMap.getOrElse(elem1._1, -1.0)
-      if (math.abs(elem1._2 - inSecondMapValue) > eps) return false
+      val inSecondMapValue = oldMap.getOrElse(elem1._1, utilEv.fromInt(-1))
+      if (utilEv.abs(elem1._2 - inSecondMapValue) >= epsNum / epsDen) return false
     }
     true
   }
 
   //  //TODO: Should the whole memory be the same, or only for the current action? DAAAAH!!! Same for ranked!!!
-  override def isStateUnchanged(oldConfig: SimpleMemoryConfig[Id, Action, Double], newConfig: SimpleMemoryConfig[Id, Action, Double]): Boolean = {
+  override def isStateUnchanged(oldConfig: SimpleMemoryConfig[Id, Action, UtilityType], newConfig: SimpleMemoryConfig[Id, Action, UtilityType]): Boolean = {
     (oldConfig.centralVariableAssignment == newConfig.centralVariableAssignment) &&
       (oldConfig.neighborhood == newConfig.neighborhood) &&
       sameMaps(oldConfig.memory, newConfig.memory)

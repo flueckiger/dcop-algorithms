@@ -41,21 +41,25 @@ import com.signalcollect.dcop.impl.ArgmaxADecisionRule
  * Ranked, RankedConflict, NoRankConflict, DynamicRankedConflict
  */
 
-class DsaAVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Action, Config]](changeProbability: Double) extends Optimizer[AgentId, Action, Config, Double] {
+class DsaAVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Action, Config], UtilityType](changeProbability: Double)(implicit utilEv: Numeric[UtilityType]) extends Optimizer[AgentId, Action, Config, UtilityType] {
   val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, Config](changeProbability)
-  val rule = new ArgmaxADecisionRule[AgentId, Action, Config] 
-  		with NashEquilibriumConvergence[AgentId, Action, Config]  
-  		with MemoryLessTargetFunction[AgentId, Action, Config, Double] 
-  		with VertexColoringUtility[AgentId, Action, Config]
+  val rule = new ArgmaxADecisionRule[AgentId, Action, Config, UtilityType] 
+  		with NashEquilibriumConvergence[AgentId, Action, Config, UtilityType]  
+  		with MemoryLessTargetFunction[AgentId, Action, Config, UtilityType] 
+  		with VertexColoringUtility[AgentId, Action, Config, UtilityType] {
+        override val utilEv = DsaAVertexColoring.this.utilEv
+      }
 }
 
 
-class RankedDsaAVertexColoring[AgentId, Action](changeProbability: Double) extends Optimizer[AgentId, Action, RankedConfig[AgentId, Action], Double] {
-  val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, RankedConfig[AgentId, Action]](changeProbability)
-  val rule = new  ArgmaxADecisionRule[AgentId, Action, RankedConfig[AgentId, Action]] 
-  		with NashEquilibriumConvergence[AgentId, Action, RankedConfig[AgentId, Action]]  
-  		with RankWeightedTargetFunction[AgentId, Action, Double] 
-  		with VertexColoringUtility[AgentId, Action, RankedConfig[AgentId, Action]]
+class RankedDsaAVertexColoring[AgentId, Action, UtilityType](changeProbability: Double)(implicit utilEv: Numeric[UtilityType]) extends Optimizer[AgentId, Action, RankedConfig[AgentId, Action, UtilityType], UtilityType] {
+  val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, RankedConfig[AgentId, Action, UtilityType]](changeProbability)
+  val rule = new  ArgmaxADecisionRule[AgentId, Action, RankedConfig[AgentId, Action, UtilityType], UtilityType] 
+  		with NashEquilibriumConvergence[AgentId, Action, RankedConfig[AgentId, Action, UtilityType], UtilityType]  
+  		with RankWeightedTargetFunction[AgentId, Action, UtilityType] 
+  		with VertexColoringUtility[AgentId, Action, RankedConfig[AgentId, Action, UtilityType], UtilityType] {
+        override val utilEv = RankedDsaAVertexColoring.this.utilEv
+      }
   override def toString = "RankedDsaAVertexColoringChangeProbability" + changeProbability
 }
 

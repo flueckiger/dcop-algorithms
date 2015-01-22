@@ -51,8 +51,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new SimpleDcopVertex(initialConf(1))(new DsanVertexColoring(0.5, 1, 2), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, new SimpleDcopEdge(1))
-            g.addEdge(1, new SimpleDcopEdge(0))
+            g.addEdge(0, SimpleDcopEdge(vertex1))
+            g.addEdge(1, SimpleDcopEdge(vertex0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
@@ -76,7 +76,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             def initialConf(id: Int) = RankedConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
-              ranks = Map.empty[Int, Double].withDefaultValue(0),
+              ranks = Map.empty[Int, Double].withDefaultValue(0.0),
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
@@ -84,8 +84,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new RankedDcopVertex(initialConf(1))(new RankedDsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, new RankedDcopEdge(1))
-            g.addEdge(1, new RankedDcopEdge(0))
+            g.addEdge(0, RankedDcopEdge(vertex1))
+            g.addEdge(1, RankedDcopEdge(vertex0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
             assert(math.abs(vertex0.currentConfig.ranks(vertex0.id) - vertex1.currentConfig.ranks(vertex1.id)) < 0.01, "Should have almost the same rank for both vertices.")
@@ -110,7 +110,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             def initialConf(id: Int) = RankedConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
-              ranks = Map.empty[Int, Double].withDefaultValue(0),
+              ranks = Map.empty[Int, Double].withDefaultValue(0.0),
               domain = Set(0, 1),
               centralVariableAssignment = (id, initial0Value))
 
@@ -118,8 +118,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new RankedDcopVertex(initialConf(1))(new RankedDsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, new RankedDcopEdge(1))
-            g.addEdge(1, new RankedDcopEdge(0))
+            g.addEdge(0, RankedDcopEdge(vertex1))
+            g.addEdge(1, RankedDcopEdge(vertex0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
             assert(math.abs(vertex0.currentConfig.ranks(vertex0.id) - vertex1.currentConfig.ranks(vertex1.id)) < 0.01, "Should have almost the same rank for both vertices.")
@@ -152,8 +152,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new MemoryDcopVertex(initialConf(1))(new FadingMemoryJsfpiVertexColoring(0.5, 0.7), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, new MemoryDcopEdge(1))
-            g.addEdge(1, new MemoryDcopEdge(0))
+            g.addEdge(0, MemoryDcopEdge(vertex1))
+            g.addEdge(1, MemoryDcopEdge(vertex0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
@@ -186,8 +186,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new MemoryDcopVertex(initialConf(1))(new WrmiVertexColoring(0.5, 0.7), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, new MemoryDcopEdge(1))
-            g.addEdge(1, new MemoryDcopEdge(0))
+            g.addEdge(0, MemoryDcopEdge(vertex1))
+            g.addEdge(1, MemoryDcopEdge(vertex0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
@@ -218,8 +218,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new SimpleDcopVertex(initialConf(1))(new DsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, new SimpleDcopEdge(1))
-            g.addEdge(1, new SimpleDcopEdge(0))
+            g.addEdge(0, SimpleDcopEdge(vertex1))
+            g.addEdge(1, SimpleDcopEdge(vertex0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
