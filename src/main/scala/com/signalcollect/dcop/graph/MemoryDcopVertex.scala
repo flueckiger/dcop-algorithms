@@ -67,7 +67,7 @@ class MemoryDcopVertex[Id, Action, UtilityType](
   type Signal = Action //(Action, Map[Action, Double], Long)
 
   override def currentConfig: SimpleMemoryConfig[Id, Action, UtilityType] = {
-    val neighborhood: Map[Id, Action] = mostRecentSignalMap
+    val neighborhood: Map[Id, Action] = totalSignalMap
     val oldC = SimpleMemoryConfig(neighborhood, state.memory, state.numberOfCollects, state.domain, state.centralVariableAssignment)
     val newMemory = optimizer.rule.computeExpectedUtilities(oldC)
     val c = SimpleMemoryConfig(neighborhood, newMemory, state.numberOfCollects + 1, state.domain, state.centralVariableAssignment) //TODO???

@@ -21,6 +21,17 @@ abstract class DcopVertex[Id, Action, Config <: Configuration[Id, Action, Config
 
   def currentConfig: Config
 
+  private[this] val initialNeighborhood = initialState.neighborhood
+
+  protected def totalSignalMap(implicit ev: Action => Signal): Map[Id, Signal] = {
+    initialNeighborhood.foldLeft(mostRecentSignalMap: Map[Id, Signal])(
+      (map, neighbor) =>
+        if (map.contains(neighbor._1))
+          map
+        else
+          map + ((neighbor._1, neighbor._2: Signal)))
+  }
+
   def changeMove(c: Config): Config = {
     val move = optimizer.computeMove(c)
     val newConfig = c.withCentralVariableAssignment(move)

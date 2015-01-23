@@ -46,7 +46,7 @@ class SimpleDcopVertex[Id, Action, UtilityType](
   type Signal = Action
   
   override def currentConfig: SimpleConfig[Id, Action, UtilityType] = {
-    val neighborhood: Map[Id, Action] = mostRecentSignalMap
+    val neighborhood: Map[Id, Action] = totalSignalMap
     val c = SimpleConfig[Id, Action, UtilityType](neighborhood, state.numberOfCollects+1, state.domain, state.centralVariableAssignment, state.utilityType)
     c
   }
