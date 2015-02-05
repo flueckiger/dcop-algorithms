@@ -1,6 +1,3 @@
-import AssemblyKeys._
-assemblySettings
-
 /** Project **/
 name := "dcop-algorithms"
 
