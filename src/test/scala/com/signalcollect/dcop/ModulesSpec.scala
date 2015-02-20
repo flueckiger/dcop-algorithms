@@ -41,7 +41,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = new GraphBuilder[Int, Int].build
           try {
-            def initialConf(id: Int) = SimpleConfig(
+            def initialConf(id: Int) = DefaultSimpleConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
               domain = Set(0, 1, 2, 3),
@@ -51,8 +51,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new SimpleDcopVertex(initialConf(1))(new DsanVertexColoring(0.5, 1, 2), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, SimpleDcopEdge(vertex1))
-            g.addEdge(1, SimpleDcopEdge(vertex0))
+            g.addEdge(0, new DcopEdge(1))
+            g.addEdge(1, new DcopEdge(0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
@@ -73,7 +73,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = new GraphBuilder[Int, Int].build
           try {
-            def initialConf(id: Int) = RankedConfig(
+            def initialConf(id: Int) = DefaultRankedConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
               ranks = Map.empty[Int, Double].withDefaultValue(0.0),
@@ -107,7 +107,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = new GraphBuilder[Int, Int].build
           try {
-            def initialConf(id: Int) = RankedConfig(
+            def initialConf(id: Int) = DefaultRankedConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
               ranks = Map.empty[Int, Double].withDefaultValue(0.0),
@@ -141,7 +141,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = new GraphBuilder[Int, Int].build
           try {
-            def initialConf(id: Int) = SimpleMemoryConfig(
+            def initialConf(id: Int) = DefaultMemoryConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               memory = Map.empty[Int, Double].withDefaultValue(0.0),
               numberOfCollects = 0,
@@ -152,8 +152,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new MemoryDcopVertex(initialConf(1))(new FadingMemoryJsfpiVertexColoring(0.5, 0.7), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, MemoryDcopEdge(vertex1))
-            g.addEdge(1, MemoryDcopEdge(vertex0))
+            g.addEdge(0, new DcopEdge(1))
+            g.addEdge(1, new DcopEdge(0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
@@ -175,7 +175,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
           val g = new GraphBuilder[Int, Int].build
           try {
 
-            def initialConf(id: Int) = SimpleMemoryConfig(
+            def initialConf(id: Int) = DefaultMemoryConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               memory = Map.empty[Int, Double].withDefaultValue(0.0),
               numberOfCollects = 0,
@@ -186,8 +186,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new MemoryDcopVertex(initialConf(1))(new WrmiVertexColoring(0.5, 0.7), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, MemoryDcopEdge(vertex1))
-            g.addEdge(1, MemoryDcopEdge(vertex0))
+            g.addEdge(0, new DcopEdge(1))
+            g.addEdge(1, new DcopEdge(0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {
@@ -208,7 +208,7 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
         for (i <- (1 to 50)) {
           val g = new GraphBuilder[Int, Int].build
           try {
-            def initialConf(id: Int) = SimpleConfig(
+            def initialConf(id: Int) = DefaultSimpleConfig(
               neighborhood = Map.empty[Int, Int].withDefaultValue(0),
               numberOfCollects = 0,
               domain = Set(0, 1),
@@ -218,8 +218,8 @@ class ModulesSpec extends FlatSpec with ShouldMatchers with Checkers with TestAn
             val vertex1 = new SimpleDcopVertex(initialConf(1))(new DsaAVertexColoring(0.5), debug = false)
             g.addVertex(vertex0)
             g.addVertex(vertex1)
-            g.addEdge(0, SimpleDcopEdge(vertex1))
-            g.addEdge(1, SimpleDcopEdge(vertex0))
+            g.addEdge(0, new DcopEdge(1))
+            g.addEdge(1, new DcopEdge(0))
             println(g.execute)
             assert(vertex0.state.centralVariableValue != vertex1.state.centralVariableValue, "Color collision")
           } finally {

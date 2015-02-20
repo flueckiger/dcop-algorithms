@@ -21,33 +21,15 @@
 package com.signalcollect.dcop.graph
 import com.signalcollect._
 import com.signalcollect.dcop.modules._
-import com.signalcollect.dcop.impl.SimpleConfig
 
-class SimpleDcopEdge[Id, Action, UtilityType](targetId: Id) extends DefaultEdge(targetId) {
-  type Source = SimpleDcopVertex[Id, Action, UtilityType]
-
-  def signal = {
-    val sourceState = source.state
-    sourceState.centralVariableValue
-  }
-}
-
-object SimpleDcopEdge {
-  def apply[Id, Action, Config <: Configuration[Id, Action, Config], UtilityType](vertex: DcopVertex[Id, Action, Config, UtilityType]) =
-    new SimpleDcopEdge[Id, Action, UtilityType](vertex.state.centralVariableAssignment._1)
-}
-
-class SimpleDcopVertex[Id, Action, UtilityType](
-  initialState: SimpleConfig[Id, Action, UtilityType])(
-    override val optimizer: Optimizer[Id, Action, SimpleConfig[Id, Action, UtilityType], UtilityType],
+class SimpleDcopVertex[Id, Action, Config <: SimpleConfig[Id, Action, UtilityType, Config], UtilityType](
+  initialState: Config with SimpleConfig[Id, Action, UtilityType, Config])(
+    override val optimizer: Optimizer[Id, Action, Config, UtilityType],
     debug: Boolean = false)
-  extends DcopVertex[Id, Action, SimpleConfig[Id, Action, UtilityType], UtilityType](initialState)(optimizer, debug) {
+  extends DcopVertex[Id, Action, Config, UtilityType](initialState)(optimizer, debug) {
   
   type Signal = Action
   
-  override def currentConfig: SimpleConfig[Id, Action, UtilityType] = {
-    val neighborhood: Map[Id, Action] = totalSignalMap
-    val c = SimpleConfig[Id, Action, UtilityType](neighborhood, state.numberOfCollects+1, state.domain, state.centralVariableAssignment, state.utilityType)
-    c
-  }
+  override def currentConfig: Config =
+    state.collect(totalSignalMap)
 }

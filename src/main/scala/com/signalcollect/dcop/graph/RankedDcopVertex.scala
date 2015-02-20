@@ -26,8 +26,8 @@ import com.signalcollect._
 import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 
-class RankedDcopEdge[Id, Action, UtilityType](targetId: Id)(implicit utilEv: Fractional[UtilityType]) extends DefaultEdge(targetId) {
-  type Source = RankedDcopVertex[Id, Action, UtilityType]
+class RankedDcopEdge[Id, UtilityType](targetId: Id)(implicit utilEv: Fractional[UtilityType]) extends DefaultEdge(targetId) {
+  type Source = Vertex[_, _ <: RankedConfig[Id, _, UtilityType, _], _, _]
 
   def signal = {
     val sourceState = source.state
@@ -38,7 +38,7 @@ class RankedDcopEdge[Id, Action, UtilityType](targetId: Id)(implicit utilEv: Fra
 
 object RankedDcopEdge {
   def apply[Id, Action, Config <: Configuration[Id, Action, Config], UtilityType](vertex: DcopVertex[Id, Action, Config, UtilityType])(implicit utilEv: Fractional[UtilityType]) =
-    new RankedDcopEdge[Id, Action, UtilityType](vertex.state.centralVariableAssignment._1)
+    new RankedDcopEdge[Id, UtilityType](vertex.state.centralVariableAssignment._1)
 }
 
 /**
@@ -51,15 +51,15 @@ object RankedDcopEdge {
  * @param debug Boolean idicating if there should be any printlines
  * @param convergeByEntireState Boolean indicating if the algorithm stops when the entire state or only the action stabilizes.
  */
-class RankedDcopVertex[Id, Action, UtilityType](
-  initialState: RankedConfig[Id, Action, UtilityType])(
-    override val optimizer: Optimizer[Id, Action, RankedConfig[Id, Action, UtilityType], UtilityType],
+class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityType, Config], UtilityType](
+  initialState: Config with RankedConfig[Id, Action, UtilityType, Config])(
+    override val optimizer: Optimizer[Id, Action, Config, UtilityType],
     baseRank: (Int, Int) = (3, 20),
     debug: Boolean = false,
     eps: (Int, Int) = (1, 100000000),
     convergeByEntireState: Boolean = true)(
       implicit utilEv: Fractional[UtilityType])
-  extends DcopVertex[Id, Action, RankedConfig[Id, Action, UtilityType], UtilityType](initialState)(optimizer, debug) {
+  extends DcopVertex[Id, Action, Config, UtilityType](initialState)(optimizer, debug) {
   val baseRankNum = utilEv.fromInt(baseRank._1)
   val baseRankDen = utilEv.fromInt(baseRank._2)
   val epsNum = utilEv.fromInt(eps._1)
@@ -69,7 +69,7 @@ class RankedDcopVertex[Id, Action, UtilityType](
 
   type Signal = (Action, UtilityType)
 
-  def currentConfig: RankedConfig[Id, Action, UtilityType] = {
+  def currentConfig: Config = {
     val neighborhoodSignalMap = mostRecentSignalMap
     val neighborhoodAssignments = neighborhoodSignalMap.
       map(tuple => (tuple._1, tuple._2._1)).toMap
@@ -77,14 +77,14 @@ class RankedDcopVertex[Id, Action, UtilityType](
       map(tuple => (tuple._1, tuple._2._2)).toMap
     //  val ranks = neighborhoodRanks + ((id, state._2))
     val oldRanks = neighborhoodRanks + ((id, state.ranks(id)))
-    val oldC = RankedConfig(neighborhoodAssignments, state.numberOfCollects, oldRanks, state.domain, state.centralVariableAssignment)
+    val oldC = state.collect(neighborhoodAssignments, oldRanks)
     val ranks = neighborhoodRanks + ((id, computeRankForMove(oldC)))
-    val c = RankedConfig(neighborhoodAssignments, state.numberOfCollects + 1, ranks, state.domain, state.centralVariableAssignment)
+    val c = oldC.collect(ranks)
     c
   }
 
   //TODO: Replace with more general.  
-  def computeRankForMove(c: RankedConfig[Id, Action, UtilityType]): UtilityType = {
+  def computeRankForMove(c: Config): UtilityType = {
     val allies = c.neighborhood.filter(_._2 != c.centralVariableValue)
     val allyRankSum = allies.keys.map(c.ranks).sum
     val dampingNumerator = baseRankDen - baseRankNum
@@ -100,7 +100,7 @@ class RankedDcopVertex[Id, Action, UtilityType](
     true
   }
   
-  override def isStateUnchanged(oldConfig: RankedConfig[Id, Action, UtilityType], newConfig: RankedConfig[Id, Action, UtilityType]): Boolean = {
+  override def isStateUnchanged(oldConfig: Config, newConfig: Config): Boolean = {
     (oldConfig.centralVariableAssignment == newConfig.centralVariableAssignment) &&
     (oldConfig.neighborhood == newConfig.neighborhood) && 
     sameMaps(oldConfig.ranks, newConfig.ranks)
