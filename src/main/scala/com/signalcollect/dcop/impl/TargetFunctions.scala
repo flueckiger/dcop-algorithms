@@ -73,7 +73,7 @@ trait RankWeightedTargetFunction[AgentId, Action, Config <: RankedConfig[AgentId
 
   override def computeExpectedUtilities(c: Config) = {
     val configUtilities = c.domain.view.map(x => {
-      val (allies, opponents) = c.neighborhood.partition(_._2 != x)
+      val (opponents, allies) = c.neighborhood.partition(c.expectedConflicts(x).compose(_._1))
       val allyRanks = allies.keys.map(c.ranks(_)).sum
       val opponentRanks = opponents.keys.map(c.ranks(_)).sum
       val expectedUtility = allyRanks - opponentRanks

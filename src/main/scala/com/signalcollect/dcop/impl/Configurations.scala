@@ -13,10 +13,10 @@ case class DefaultSimpleConfig[Id, Action, UtilityType](
   }
 
   //TODO: Used for ArgmaxB decision rule and for ZeroConflictConvergenceDetection.
-  def computeExpectedNumberOfConflicts = {
-    val occupiedColors = neighborhood.values
-    val numberOfConflicts = occupiedColors.filter(_ == centralVariableValue).size
-    numberOfConflicts
+  override def expectedConflicts(centralVariableValue: Action) = {
+    val conflicts = Set.newBuilder[Id]
+    neighborhood.withFilter(_._2 == centralVariableValue).foreach(conflicts += _._1)
+    conflicts.result
   }
 
   override def collect(neighborhood: Map[Id, Action]) =
@@ -39,10 +39,10 @@ case class DefaultMemoryConfig[Id, Action, UtilityType](
     this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
   }
 
-  def computeExpectedNumberOfConflicts = {
-    val occupiedColors = neighborhood.values
-    val numberOfConflicts = occupiedColors.filter(_ == centralVariableValue).size
-    numberOfConflicts
+  override def expectedConflicts(centralVariableValue: Action) = {
+    val conflicts = Set.newBuilder[Id]
+    neighborhood.withFilter(_._2 == centralVariableValue).foreach(conflicts += _._1)
+    conflicts.result
   }
 
   override def collect(neighborhood: Map[Id, Action]) =
@@ -72,10 +72,10 @@ case class DefaultRankedConfig[Id, Action, UtilityType](
     this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
   }
 
-  def computeExpectedNumberOfConflicts = {
-    val occupiedColors = neighborhood.values
-    val numberOfConflicts = occupiedColors.filter(_ == centralVariableValue).size
-    numberOfConflicts
+  override def expectedConflicts(centralVariableValue: Action) = {
+    val conflicts = Set.newBuilder[Id]
+    neighborhood.withFilter(_._2 == centralVariableValue).foreach(conflicts += _._1)
+    conflicts.result
   }
 
   override def collect(neighborhood: Map[Id, Action], ranks: Map[Id, UtilityType]) =

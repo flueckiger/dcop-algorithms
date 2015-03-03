@@ -7,7 +7,8 @@ trait Configuration[AgentId, Action, +Config <: Configuration[AgentId, Action, C
   def withCentralVariableAssignment(value: Action): Config
   def centralVariableAssignment: (AgentId, Action)
   def centralVariableValue = centralVariableAssignment._2
-  def computeExpectedNumberOfConflicts: Int
+  def expectedConflicts(centralVariableValue: Action): Set[AgentId]
+  def expectedConflicts: Set[AgentId] = expectedConflicts(centralVariableValue)
 }
 
 trait UtilityConfig[AgentId, Action, +UtilityType, +Config <: UtilityConfig[AgentId, Action, UtilityType, Config]] extends Configuration[AgentId, Action, Config] {}

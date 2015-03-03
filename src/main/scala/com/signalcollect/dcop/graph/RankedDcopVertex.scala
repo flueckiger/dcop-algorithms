@@ -85,7 +85,7 @@ class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityTyp
 
   //TODO: Replace with more general.  
   def computeRankForMove(c: Config): UtilityType = {
-    val allies = c.neighborhood.filter(_._2 != c.centralVariableValue)
+    val allies = c.neighborhood.filterNot(c.expectedConflicts.compose(_._1))
     val allyRankSum = allies.keys.map(c.ranks).sum
     val dampingNumerator = baseRankDen - baseRankNum
     val newPageRankNumerator = baseRankNum + dampingNumerator * allyRankSum

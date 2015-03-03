@@ -42,7 +42,7 @@ trait ArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[AgentId, Acti
     // the maxUtility move may not be the current move anymore...
     if ((isInLocalOptimumGivenUtilitiesAndMaxUtility(c, expectedUtilities, maxUtility)) &&
       (maxUtilityMoves.contains(c.centralVariableValue)) &&
-      (c.computeExpectedNumberOfConflicts == 0)) {
+      (c.expectedConflicts.isEmpty)) {
       c.centralVariableValue
     } else {
       val chosenMaxUtilityMove = maxUtilityMoves(Random.nextInt(maxUtilityMoves.size))
@@ -63,11 +63,11 @@ trait ExplorerArgmaxBDecisionRule[AgentId, Action, Config <: Configuration[Agent
 
     def hasNoConflictsAtNashEquilibrium =
       (maxUtilityMoves.contains(c.centralVariableValue)) &&
-        (c.computeExpectedNumberOfConflicts == 0)
+        (c.expectedConflicts.isEmpty)
 
     def hasConflictsAtNashEquilibrium =
       (maxUtilityMoves.contains(c.centralVariableValue)) &&
-        (c.computeExpectedNumberOfConflicts > 0)
+        (c.expectedConflicts.nonEmpty)
 
     if (hasNoConflictsAtNashEquilibrium) {
       c.centralVariableValue
