@@ -65,13 +65,6 @@ case class DefaultRankedConfig[Id, Action, UtilityType](
   val domain: Set[Action],
   val centralVariableAssignment: (Id, Action)) extends RankedConfig[Id, Action, UtilityType, DefaultRankedConfig[Id, Action, UtilityType]] {
 
-  /*
-   * Not only the value changes, but also the rank.  
-   */
-  final def withCentralVariableAssignment(value: Action) = {
-    this.copy(centralVariableAssignment = (centralVariableAssignment._1, value))
-  }
-
   override def expectedConflicts(centralVariableValue: Action) = {
     val conflicts = Set.newBuilder[Id]
     neighborhood.withFilter(_._2 == centralVariableValue).foreach(conflicts += _._1)
@@ -83,6 +76,13 @@ case class DefaultRankedConfig[Id, Action, UtilityType](
 
   override def collect(ranks: Map[Id, UtilityType]) =
     copy(ranks = ranks, numberOfCollects = numberOfCollects + 1)
+
+  /*
+   * Not only the value changes, but also the rank.  
+   */
+  override def changeMove(centralVariableValue: Action, ranks: Map[Id, UtilityType]) = {
+    this.copy(centralVariableAssignment = (centralVariableAssignment._1, centralVariableValue), ranks = ranks)
+  }
 
   override def toString = s"      neighborhood = $neighborhood.toString\n" +
     s"      ranks = $ranks.toString\n" +

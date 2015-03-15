@@ -27,4 +27,7 @@ trait RankedConfig[AgentId, Action, UtilityType, +Config <: RankedConfig[AgentId
   def ranks: Map[AgentId, UtilityType]
   def collect(neighborhood: Map[AgentId, Action], ranks: Map[AgentId, UtilityType]): Config
   def collect(ranks: Map[AgentId, UtilityType]): Config
+  def changeMove(centralVariableValue: Action, ranks: Map[AgentId, UtilityType]): Config
+
+  override def withCentralVariableAssignment(value: Action): Config = changeMove(value, ranks)
 }

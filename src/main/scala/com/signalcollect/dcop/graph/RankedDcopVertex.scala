@@ -55,6 +55,10 @@ class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityTyp
   initialState: Config with RankedConfig[Id, Action, UtilityType, Config])(
     override val optimizer: Optimizer[Id, Action, Config, UtilityType],
     baseRank: (Int, Int) = (3, 20),
+    unchangedMoveRankFactor: (Int, Int) = (1, 1),
+    unchangedMoveRankAddend: (Int, Int) = (0, 1),
+    changedMoveRankFactor: (Int, Int) = (1, 1),
+    changedMoveRankAddend: (Int, Int) = (0, 1),
     debug: Boolean = false,
     eps: (Int, Int) = (1, 100000000),
     convergeByEntireState: Boolean = true)(
@@ -62,6 +66,14 @@ class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityTyp
   extends DcopVertex[Id, Action, Config, UtilityType](initialState)(optimizer, debug) {
   val baseRankNum = utilEv.fromInt(baseRank._1)
   val baseRankDen = utilEv.fromInt(baseRank._2)
+  val unchangedMoveRankFactorNum = utilEv.fromInt(unchangedMoveRankFactor._1)
+  val unchangedMoveRankFactorDen = utilEv.fromInt(unchangedMoveRankFactor._2)
+  val unchangedMoveRankAddendNum = utilEv.fromInt(unchangedMoveRankAddend._1)
+  val unchangedMoveRankAddendDen = utilEv.fromInt(unchangedMoveRankAddend._2)
+  val changedMoveRankFactorNum = utilEv.fromInt(changedMoveRankFactor._1)
+  val changedMoveRankFactorDen = utilEv.fromInt(changedMoveRankFactor._2)
+  val changedMoveRankAddendNum = utilEv.fromInt(changedMoveRankAddend._1)
+  val changedMoveRankAddendDen = utilEv.fromInt(changedMoveRankAddend._2)
   val epsNum = utilEv.fromInt(eps._1)
   val epsDen = utilEv.fromInt(eps._2)
 
@@ -104,6 +116,25 @@ class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityTyp
     (oldConfig.centralVariableAssignment == newConfig.centralVariableAssignment) &&
     (oldConfig.neighborhood == newConfig.neighborhood) && 
     sameMaps(oldConfig.ranks, newConfig.ranks)
+  }
+
+  override def changeMove(c: Config): Config = {
+    val agentId = c.centralVariableAssignment._1
+    val ranks = c.ranks
+    val move = optimizer.computeMove(c)
+    val newRanks = if (move == c.centralVariableValue)
+      ranks + ((agentId, ranks(agentId) *
+        unchangedMoveRankFactorNum / unchangedMoveRankFactorDen +
+        unchangedMoveRankAddendNum / unchangedMoveRankAddendDen))
+    else
+      ranks + ((agentId, ranks(agentId) *
+        changedMoveRankFactorNum / changedMoveRankFactorDen +
+        changedMoveRankAddendNum / changedMoveRankAddendDen))
+    val newConfig = c.changeMove(move, newRanks)
+    if (debug) {
+      println(s"Vertex $id has changed its state from $state to $newConfig.")
+    }
+    newConfig
   }
 
   override def collect = {
