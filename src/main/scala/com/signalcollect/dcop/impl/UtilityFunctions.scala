@@ -3,23 +3,11 @@ package com.signalcollect.dcop.impl
 import com.signalcollect.dcop.modules._
 
 trait VertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Action, Config], UtilityType] extends UtilityFunction[AgentId, Action, Config, UtilityType] {
-  implicit protected def utilEv: Numeric[UtilityType]
-
-  def computeUtility(c: Config) = {
-    val occupiedColors = c.neighborhood.values
-    val numberOfConflicts = occupiedColors.filter(_ == c.centralVariableValue).size
-    val numberOfNeighbors = occupiedColors.size
-    val neighborsInSync = numberOfNeighbors - numberOfConflicts
-    utilEv.fromInt(neighborsInSync)
-  }
+  override def computeUtilities(c: Config, a: Action) =
+    c.neighborhood.transform((_, x) => if (x == a) utilEv.zero else utilEv.one)
 }
 
 trait ConflictBasedVertexColoringUtility[AgentId, Action, Config <: Configuration[AgentId, Action, Config], UtilityType] extends UtilityFunction[AgentId, Action, Config, UtilityType] {
-  implicit protected def utilEv: Numeric[UtilityType]
-
-  def computeUtility(c: Config) = {
-    val occupiedColors = c.neighborhood.values
-    val numberOfConflicts = occupiedColors.filter(_ == c.centralVariableValue).size
-    utilEv.fromInt(-numberOfConflicts)
-  }
+  override def computeUtilities(c: Config, a: Action) =
+    c.neighborhood.transform((_, x) => if (x == a) utilEv.fromInt(-1) else utilEv.zero)
 }
