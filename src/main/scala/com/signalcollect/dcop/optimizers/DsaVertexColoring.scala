@@ -52,7 +52,7 @@ class DsaAVertexColoring[AgentId, Action, Config <: Configuration[AgentId, Actio
 }
 
 
-class RankedDsaAVertexColoring[AgentId, Action, Config <: RankedConfig[AgentId, Action, UtilityType, Config], UtilityType](changeProbability: Double)(implicit utilEv: Numeric[UtilityType]) extends Optimizer[AgentId, Action, Config, UtilityType] {
+class RankedDsaAVertexColoring[AgentId, Action, Config <: RankedConfig[AgentId, Action, UtilityType, Config], UtilityType](changeProbability: Double)(implicit utilEv: Fractional[UtilityType]) extends Optimizer[AgentId, Action, Config, UtilityType] {
   val schedule = new ParallelRandomAdjustmentSchedule[AgentId, Action, Config](changeProbability)
   val rule = new  ArgmaxADecisionRule[AgentId, Action, Config, UtilityType] 
   		with NashEquilibriumConvergence[AgentId, Action, Config, UtilityType]  

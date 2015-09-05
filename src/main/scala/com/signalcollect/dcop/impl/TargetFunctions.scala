@@ -67,23 +67,16 @@ trait DiscountedAverageRegretsTargetFunction[AgentId, Action, Config <: MemoryCo
 
 //TODO: Push the Utility calculation into UtilityFunctions.scala and replace the Double in the TargetFunction with the UtilityType.
 trait RankWeightedTargetFunction[AgentId, Action, Config <: RankedConfig[AgentId, Action, UtilityType, Config], UtilityType] extends MemoryLessTargetFunction[AgentId, Action, Config, UtilityType] {
-  import scala.math.Numeric.Implicits._
+  import scala.math.Fractional.Implicits._
 
-  implicit protected def utilEv: Numeric[UtilityType]
+  implicit protected def utilEv: Fractional[UtilityType]
 
   override def computeExpectedUtilities(c: Config) = {
-    val configUtilities = c.domain.view.map(x => {
-      val (opponents, allies) = c.neighborhood.partition(c.expectedConflicts(x).compose(_._1))
-      val allyRanks = allies.keys.map(c.ranks(_)).sum
-      val opponentRanks = opponents.keys.map(c.ranks(_)).sum
-      val expectedUtility = allyRanks - opponentRanks
-      val expectedMoveUtility = (x, expectedUtility)
-      //if (configuration.centralVariableAssignment._1 == 2) {
-      //println(s"Expected move utility for agent ${configuration.centralVariableAssignment._1} and move ${expectedMoveUtility._1} is ${expectedMoveUtility._2}")
-      //}
-      expectedMoveUtility
-    })
-    configUtilities.toMap
+    val utilityBounds = this.utilityBounds(c)
+    c.domain.view.map(action => {
+      (action, computeUtilities(c, action).view.map(x =>
+        c.ranks(x._1) * (x._2 + x._2 - utilityBounds(x._1)._1 - utilityBounds(x._1)._2) / (utilityBounds(x._1)._2 - utilityBounds(x._1)._1)).sum)
+    }).toMap
   }
 
   /**

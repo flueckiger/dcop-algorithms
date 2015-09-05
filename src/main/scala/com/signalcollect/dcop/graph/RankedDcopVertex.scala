@@ -27,12 +27,13 @@ import com.signalcollect.dcop.modules._
 import com.signalcollect.dcop.impl._
 
 class RankedDcopEdge[Id, UtilityType](targetId: Id)(implicit utilEv: Fractional[UtilityType]) extends DefaultEdge(targetId) {
-  type Source = Vertex[_, _ <: RankedConfig[Id, _, UtilityType, _], _, _]
+  type Source = RankedDcopVertex[Id, _, _ <: RankedConfig[Id, _, UtilityType, _], UtilityType]
 
   def signal = {
-    val sourceState = source.state
-    val sourceStateAssignment = source.state.centralVariableAssignment
-    (sourceStateAssignment._2, sourceState.ranks(sourceStateAssignment._1) / utilEv.fromInt(source.edgeCount))
+    val vertex = source
+    val sourceState = vertex.state
+    val sourceStateAssignment = sourceState.centralVariableAssignment
+    (sourceStateAssignment._2, sourceState.ranks(sourceStateAssignment._1) * vertex.utilityMinMaxDeltas(targetId) / vertex.utilityMinMaxDeltasSum)
   }
 }
 
@@ -76,6 +77,12 @@ class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityTyp
   val changedMoveRankAddendDen = utilEv.fromInt(changedMoveRankAddend._2)
   val epsNum = utilEv.fromInt(eps._1)
   val epsDen = utilEv.fromInt(eps._2)
+  val utilityBounds = optimizer.rule.utilityBounds(initialState)
+  lazy val utilityMin = utilityBounds.values.map(_._1).min
+  lazy val utilityMax = utilityBounds.values.map(_._2).max
+  lazy val utilityMinMaxDelta = utilityMax - utilityMin
+  lazy val utilityMinMaxDeltas = utilityBounds.transform((_, x) => x._2 - utilityMin)
+  lazy val utilityMinMaxDeltasSum = utilityMinMaxDeltas.values.sum
 
   //Initialize (initialAction, baseRank: Double = 0.15,)
 
@@ -97,10 +104,10 @@ class RankedDcopVertex[Id, Action, Config <: RankedConfig[Id, Action, UtilityTyp
 
   //TODO: Replace with more general.  
   def computeRankForMove(c: Config): UtilityType = {
-    val allies = c.neighborhood.filterNot(c.expectedConflicts.compose(_._1))
-    val allyRankSum = allies.keys.map(c.ranks).sum
+    val rankSum = optimizer.rule.computeUtilities(c).view.map(x =>
+      (x._2 - utilityBounds(x._1)._1) / (utilityBounds(x._1)._2 - utilityBounds(x._1)._1) * c.ranks(x._1)).sum
     val dampingNumerator = baseRankDen - baseRankNum
-    val newPageRankNumerator = baseRankNum + dampingNumerator * allyRankSum
+    val newPageRankNumerator = baseRankNum + dampingNumerator * rankSum
     newPageRankNumerator / baseRankDen
   }
 
